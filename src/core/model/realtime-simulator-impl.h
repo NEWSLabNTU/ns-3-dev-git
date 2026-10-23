@@ -159,6 +159,9 @@ class RealtimeSimulatorImpl : public SimulatorImpl
      */
     void SetSynchronizerType(TypeId tid);
 
+    /** @return The synchronizer in use. */
+    Ptr<Synchronizer> GetSynchronizer() const;
+
   private:
     /**
      * Is the simulator running?

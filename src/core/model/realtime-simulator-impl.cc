@@ -66,7 +66,13 @@ RealtimeSimulatorImpl::GetTypeId()
                           "(a subclass of ns3::Synchronizer; the wall clock by default).",
                           TypeIdValue(WallClockSynchronizer::GetTypeId()),
                           MakeTypeIdAccessor(&RealtimeSimulatorImpl::SetSynchronizerType),
-                          MakeTypeIdChecker());
+                          MakeTypeIdChecker())
+            .AddAttribute("Synchronizer",
+                          "The synchronizer in use (read only; set SynchronizerType instead).",
+                          TypeId::ATTR_GET,
+                          PointerValue(),
+                          MakePointerAccessor(&RealtimeSimulatorImpl::GetSynchronizer),
+                          MakePointerChecker<Synchronizer>());
     return tid;
 }
 
@@ -100,6 +106,12 @@ RealtimeSimulatorImpl::SetSynchronizerType(TypeId tid)
     ObjectFactory factory;
     factory.SetTypeId(tid);
     m_synchronizer = factory.Create<Synchronizer>();
+}
+
+Ptr<Synchronizer>
+RealtimeSimulatorImpl::GetSynchronizer() const
+{
+    return m_synchronizer;
 }
 
 RealtimeSimulatorImpl::~RealtimeSimulatorImpl()
