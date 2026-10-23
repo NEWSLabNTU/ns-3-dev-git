@@ -12,6 +12,7 @@
 #include "event-impl.h"
 #include "fatal-error.h"
 #include "log.h"
+#include "object-factory.h"
 #include "pointer.h"
 #include "ptr.h"
 #include "scheduler.h"
@@ -59,7 +60,13 @@ RealtimeSimulatorImpl::GetTypeId()
                           "SynchronizationMode=HardLimit)",
                           TimeValue(Seconds(0.1)),
                           MakeTimeAccessor(&RealtimeSimulatorImpl::m_hardLimit),
-                          MakeTimeChecker());
+                          MakeTimeChecker())
+            .AddAttribute("SynchronizerType",
+                          "The Synchronizer that maps simulation time to the external clock "
+                          "(a subclass of ns3::Synchronizer; the wall clock by default).",
+                          TypeIdValue(WallClockSynchronizer::GetTypeId()),
+                          MakeTypeIdAccessor(&RealtimeSimulatorImpl::SetSynchronizerType),
+                          MakeTypeIdChecker());
     return tid;
 }
 
@@ -81,6 +88,18 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl()
     // Be very careful not to do anything that would cause a change or assignment
     // of the underlying reference counts of m_synchronizer or you will be sorry.
     m_synchronizer = CreateObject<WallClockSynchronizer>();
+}
+
+void
+RealtimeSimulatorImpl::SetSynchronizerType(TypeId tid)
+{
+    NS_LOG_FUNCTION(this << tid);
+    NS_ABORT_MSG_IF(m_running, "the synchronizer cannot change while the simulator runs");
+    NS_ABORT_MSG_UNLESS(tid.IsChildOf(Synchronizer::GetTypeId()),
+                        tid.GetName() << " is not a Synchronizer");
+    ObjectFactory factory;
+    factory.SetTypeId(tid);
+    m_synchronizer = factory.Create<Synchronizer>();
 }
 
 RealtimeSimulatorImpl::~RealtimeSimulatorImpl()

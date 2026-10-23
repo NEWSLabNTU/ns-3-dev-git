@@ -152,6 +152,13 @@ class RealtimeSimulatorImpl : public SimulatorImpl
      */
     Time GetHardLimit() const;
 
+    /**
+     * Replace the synchronizer before the simulation starts.
+     *
+     * @param [in] tid A subclass of Synchronizer.
+     */
+    void SetSynchronizerType(TypeId tid);
+
   private:
     /**
      * Is the simulator running?
