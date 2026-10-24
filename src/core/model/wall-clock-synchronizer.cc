@@ -30,7 +30,10 @@ TypeId
 WallClockSynchronizer::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::WallClockSynchronizer").SetParent<Synchronizer>().SetGroupName("Core");
+        TypeId("ns3::WallClockSynchronizer")
+            .SetParent<Synchronizer>()
+            .SetGroupName("Core")
+            .AddConstructor<WallClockSynchronizer>();
     return tid;
 }
 
